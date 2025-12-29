@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api") //this helps to start every api with /api no need to keep this in every api def
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -19,14 +20,15 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/api/public/categories")
+//    @GetMapping("/api/public/categories")
+    @RequestMapping(value = "/public/categories",method = RequestMethod.GET)
     public List<Category> getAllCategories() {
 //        List<Category> categories = categoryService.getAllCategories();
 //        return new ResponseEntity<>(categories, HttpStatus.OK);
         return categoryService.getAllCategories();
     }
 
-    @PostMapping("/api/public/categories")
+    @PostMapping("/public/categories")
     public ResponseEntity<String> createCategory(@RequestBody Category category)
     {
         categoryService.createCategory(category);
@@ -41,7 +43,7 @@ public class CategoryController {
 //        return status;
 //    }
 
-    @DeleteMapping("/api/admin/delete/{categoryId}")
+    @DeleteMapping("/admin/delete/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId)
     {
         try {
@@ -54,7 +56,7 @@ public class CategoryController {
         }
     }
 
-    @PutMapping("/api/public/categories/{categoryId}")
+    @PutMapping("/public/categories/{categoryId}")
     public ResponseEntity<String> updateCategory(@RequestBody Category category,@PathVariable Long categoryId)
     {
         try{

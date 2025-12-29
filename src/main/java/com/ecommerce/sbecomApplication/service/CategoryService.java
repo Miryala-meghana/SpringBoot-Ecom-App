@@ -1,37 +1,37 @@
 package com.ecommerce.sbecomApplication.service;
 
 import com.ecommerce.sbecomApplication.model.Category;
+import com.ecommerce.sbecomApplication.repository.CategoryRepo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Data
 @NoArgsConstructor
 public class CategoryService {
 
-    private List<Category> categories=new ArrayList<>();
-    public Long nextId=1L;
+    @Autowired
+    public CategoryRepo categroyRepo;
 
     public List<Category> getAllCategories()
     {
-        return categories;
+
+        return categroyRepo.findAll();
     }
 
     public void createCategory(Category category)
     {
-        category.setCategoryId(nextId++);
-        categories.add(category);
+        categroyRepo.save(category);
     }
 
     public String deleteCategory(Long categoryId) {
+        List<Category> categories=categroyRepo.findAll();
         Category category=categories.stream()
                 .filter(c -> Objects.equals(c.getCategoryId(), categoryId))
                 .findFirst()
@@ -42,25 +42,15 @@ public class CategoryService {
 //        {
 //            return "category not found";
 //        }
-        categories.remove(category);
+//        categories.remove(category);
+        categroyRepo.delete(category);
         return "Category with id:"+categoryId+" is deleted";
     }
 
-//    public Category updateCategory(Category category, Long categoryId) {
-//        return categories.stream()
-//                .filter(c -> Objects.equals(c.getCategoryId(), categoryId))
-//                .findFirst()
-//                .map(existingCat -> {
-//                    // If found, update the name and return the object
-//                    existingCat.setCategoryName(category.getCategoryName());
-//                    return existingCat;
-//                })
-//                // If not found, throw the exception which the Controller will catch
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
-//    }
 
     public Category updateCategory(Category category, Long categoryId) {
 
+        List<Category> categories=categroyRepo.findAll();
         Optional<Category> Optionalcategory= Optional.of(categories.stream()
                 .filter(c -> Objects.equals(c.getCategoryId(), categoryId))
                 .findFirst().get());
@@ -68,7 +58,8 @@ public class CategoryService {
         {
             Category existingCat=Optionalcategory.get();
             existingCat.setCategoryName(category.getCategoryName());
-            return existingCat;
+            Category savedCategory=categroyRepo.save(existingCat);
+            return savedCategory;
         }
         return null;
     }
